@@ -1,27 +1,11 @@
 # importing the module
-
+import os
 import tkinter as tk
+from tkinter import messagebox
+from tkinter import filedialog as fd
 
 from pytube import YouTube
 from pytube.cli import on_progress
-
-# urlLink = input("please enter Youtube link: ")
-# placeToSave = input("where to store the video: ")
-
-
-# def progress_callback(stream, data_chunk, left_bytes):
-#     size = stream.filesize
-#     p = 0
-#     while p <= 100:
-#         progress = p
-#         print(str(p) + '%')
-#         p = percent(left_bytes, size)
-#
-#
-# def percent(tem, total):
-#     perc = (float(tem) / float(total)) * float(100)
-#     return perc
-
 
 root = tk.Tk()
 
@@ -34,30 +18,48 @@ root.title("YouTubeSucker(mp3/mp4)")
 # for storing name and password
 link_var = tk.StringVar()
 address_var = tk.StringVar()
+address = ""
 
 
-# defining a function that will
-# get the link and address and
-# print them on the screen
+# defining a function that will ask for mp3/mp4
 def submit():
-    # name = link_var.get()
-    # password = address_var.get()
-    #
-    # print("The name is : " + name)
-    # print("The password is : " + password)
-    #
-    # link_var.set("")
-    # address_var.set("")
+    ask = messagebox.askyesno("mp3/mp4", "Do you want to download a whole vide or just sound? "
+                                         "click 'yes' for video 'no' for audio only")
 
-    yt = YouTube(link_var.get(), on_progress_callback=on_progress)
+    yt = YouTube(link_var.get(), on_complete_callback=complete_func())
 
     # yt.streams there is a feature to choose quality, but for now following will do fine
-    video = yt.streams.get_highest_resolution()
+    if ask:
+        video = yt.streams.get_highest_resolution()
+        # 720p
+        video.download(address)
+    else:
+        video = yt.streams.get_audio_only()
+        out_file = video.download(output_path=address)
+        # highest audio quality is chosen
+        base, ext = os.path.splitext(out_file)
+        new_file = base + '.mp3'
+        os.rename(out_file, new_file)
 
-    video.download(address_var.get())
+    link_var.set("")
 
 
- # creating a label for
+# info that download completed
+def complete_func():
+    messagebox.showinfo("Done", "Download completed")
+
+
+# # download started
+# def progress_func():
+#
+
+# to get address
+def get_address():
+    global address
+    address = fd.askdirectory()
+
+
+# creating a label for
 # link using widget Label
 link_label = tk.Label(root, text='Put Youtube link here ->', font=('calibre', 10, 'bold'))
 
@@ -66,14 +68,14 @@ link_label = tk.Label(root, text='Put Youtube link here ->', font=('calibre', 10
 link_entry = tk.Entry(root, textvariable=link_var, font=('calibre', 10, 'normal'))
 
 # creating a label for address
-address_label = tk.Label(root, text='Where to download ->', font=('calibre', 10, 'bold'))
+address_label = tk.Button(root, text='Choose where to download', font=('calibre', 10, 'bold'), command=get_address)
 
 # creating an entry for address
-address_entry = tk.Entry(root, textvariable=address_var, font=('calibre', 10, 'normal'))
+# address_entry = tk.Entry(root, textvariable=address_var, font=('calibre', 10, 'normal'))
 
 # creating a button using the widget
 # Button that will call the submit function
-sub_btn = tk.Button(root, text='Submit', command=submit)
+sub_btn = tk.Button(root, text='Download', command=submit)
 
 # placing the label and entry in
 # the required position using grid
@@ -81,7 +83,7 @@ sub_btn = tk.Button(root, text='Submit', command=submit)
 link_label.grid(row=0, column=0)
 link_entry.grid(row=0, column=1)
 address_label.grid(row=1, column=0)
-address_entry.grid(row=1, column=1)
+# address_entry.grid(row=1, column=1)
 sub_btn.grid(row=2, column=1)
 
 # performing an infinite loop
