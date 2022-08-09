@@ -1,23 +1,11 @@
 # importing the module
 import os
 import tkinter as tk
+from threading import *
 from tkinter import filedialog as fd
 from tkinter import messagebox
 
 from pytube import YouTube
-
-root = tk.Tk()
-
-# setting the windows size
-root.geometry("600x400")
-
-root.title("YouTubeSucker(mp3/mp4)")
-
-# declaring string variable
-# for storing name and password
-link_var = tk.StringVar()
-address_var = tk.StringVar()
-address = ""
 
 
 # defining a function that will ask for mp3/mp4
@@ -25,6 +13,7 @@ def submit():
     ask = messagebox.askyesno("mp3/mp4", "Do you want to download a whole vide or just sound? "
                                          "click 'yes' for video 'no' for audio only")
 
+    change_while_dlading()
     yt = YouTube(link_var.get())
 
     # yt.streams there is a feature to choose quality, but for now following will do fine
@@ -40,13 +29,27 @@ def submit():
         new_file = base + '.mp3'
         os.rename(out_file, new_file)
 
+    complete_func()
+    change_after_dlading()
     link_var.set("")
 
 
+def change_while_dlading():
+    sub_btn.config(text='WAIT PLEASE!')
+    address_label.config(text='DONT TOUCH ANYTHING WHILE FILE IS BEING DOWNLOADED!')
+    link_label.config(text='DOWNLOAD STARTED')
+
+
+def change_after_dlading():
+    sub_btn.config(text='Download')
+    address_label.config(text='Choose where to download')
+    link_label.config(text='Put Youtube link here ->')
+
+
 # info that download completed
-# def complete_func():
-#     messagebox.showinfo("Done", "Download completed")
-# for some reason doesnt work
+def complete_func():
+    messagebox.showinfo("Done", "Download completed")
+
 
 # # download started
 # def progress_func():
@@ -57,6 +60,24 @@ def get_address():
     global address
     address = fd.askdirectory()
 
+
+def threading():
+    t1 = Thread(target=submit)
+    t1.start()
+
+
+root = tk.Tk()
+
+# setting the windows size
+root.geometry("600x400")
+
+root.title("YouTubeSucker(mp3/mp4)")
+
+# declaring string variable
+# for storing name and password
+link_var = tk.StringVar()
+address_var = tk.StringVar()
+address = ""
 
 # creating a label for
 # link using widget Label
@@ -74,7 +95,7 @@ address_label = tk.Button(root, text='Choose where to download', font=('calibre'
 
 # creating a button using the widget
 # Button that will call the submit function
-sub_btn = tk.Button(root, text='Download', command=submit)
+sub_btn = tk.Button(root, text='Download', command=threading)
 
 # placing the label and entry in
 # the required position using grid
