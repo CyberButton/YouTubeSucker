@@ -1,11 +1,10 @@
 # importing the module
 import os
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import filedialog as fd
+from tkinter import messagebox
 
 from pytube import YouTube
-from pytube.cli import on_progress
 
 root = tk.Tk()
 
@@ -51,7 +50,7 @@ def complete_func():
 
 # # download started
 # def progress_func():
-#
+# could figure out how to make this work)
 
 # to get address
 def get_address():
