@@ -25,7 +25,7 @@ def submit():
     ask = messagebox.askyesno("mp3/mp4", "Do you want to download a whole vide or just sound? "
                                          "click 'yes' for video 'no' for audio only")
 
-    yt = YouTube(link_var.get(), on_complete_callback=complete_func())
+    yt = YouTube(link_var.get())
 
     # yt.streams there is a feature to choose quality, but for now following will do fine
     if ask:
@@ -44,9 +44,9 @@ def submit():
 
 
 # info that download completed
-def complete_func():
-    messagebox.showinfo("Done", "Download completed")
-
+# def complete_func():
+#     messagebox.showinfo("Done", "Download completed")
+# for some reason doesnt work
 
 # # download started
 # def progress_func():
